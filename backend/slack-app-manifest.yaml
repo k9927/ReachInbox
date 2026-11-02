@@ -1,0 +1,22 @@
+display_information:
+  name: ReachInbox
+  description: Sends one rate-limit alert per sender and hourly window.
+  background_color: "#6865dc"
+features:
+  bot_user:
+    display_name: ReachInbox
+    always_online: false
+oauth_config:
+  redirect_urls:
+    - http://localhost:5000/api/slack/callback
+  scopes:
+    bot:
+      - chat:write
+      - channels:read
+      - groups:read
+      - im:read
+      - mpim:read
+settings:
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false
