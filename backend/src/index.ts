@@ -50,7 +50,7 @@ app.use(errorHandler);
 // only for local development and other self-hosted deployments.
 export default app;
 
-if (!process.env.VERCEL) {
+if (!process.env.VERCEL || process.env.RUN_HTTP_SERVER === "1") {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);

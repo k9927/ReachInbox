@@ -3,8 +3,8 @@
   "services": {
     "api": {
       "root": "backend/",
-      "framework": "express",
-      "entrypoint": "src/index.ts"
+      "runtime": "container",
+      "entrypoint": "Dockerfile.api"
     },
     "web": {
       "root": "frontend/",
