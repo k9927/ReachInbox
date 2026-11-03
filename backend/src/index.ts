@@ -46,9 +46,13 @@ app.use("/admin/queues", requireAuth, requireQueueAdmin, bullBoardAdapter.getRou
 
 app.use(errorHandler);
 
-// Start server
-const PORT = process.env.PORT || 5000;
+// Vercel serves the exported Express app as a function. Keep a port listener
+// only for local development and other self-hosted deployments.
+export default app;
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+if (!process.env.VERCEL) {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
