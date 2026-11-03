@@ -197,6 +197,23 @@ Dashboard opens at `http://localhost:5173`.
 
 ---
 
+## ☁️ Deploy on Vercel (Hobby-friendly)
+
+The repository-root `vercel.json` defines a Vite frontend, an Express API, and a BullMQ worker daemon. Set the Vercel project root to the repository root (`react-app`) and choose the **Services** framework. Vercel builds the daemon image remotely from `backend/Dockerfile`; Docker Desktop is not required locally.
+
+Vercel Daemons are in public beta and available on Hobby, subject to its quotas. Hobby currently allows 420 GB-hours of provisioned daemon memory per month. The smallest daemon is 1 GiB, so one continuously running worker uses that quota in about 17.5 days. Vercel stops the daemon when the quota is reached until the next month or an upgrade. Daemons run only in production, not preview deployments.
+
+Add the backend variables from `backend/.env` to the Vercel production environment and keep their values private. Set `FRONTEND_URL` to the production Vercel URL without a trailing slash, and set `NODE_ENV=production`. Use these callback URLs in both Vercel and the respective provider consoles:
+
+```text
+https://<your-vercel-domain>/api/auth/google/callback
+https://<your-vercel-domain>/api/slack/callback
+```
+
+The frontend uses same-origin `/api` routes in production, so leave `VITE_API_URL` unset. The local development default remains `http://localhost:5000`. Before deploying, rotate any credentials that were exposed and use only the replacement values in Vercel. Never commit `.env` files.
+
+---
+
 ## 🧪 Running Automated Tests
 
 Run backend unit tests (covering validations, CSV parsing, AES-256-GCM token encryption, rate limiting, and timestamp calculations):

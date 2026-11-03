@@ -1,0 +1,36 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "api": {
+      "root": "backend/",
+      "framework": "express"
+    },
+    "web": {
+      "root": "frontend/",
+      "framework": "vite"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": { "service": "api" }
+    },
+    {
+      "source": "/admin/queues/(.*)",
+      "destination": { "service": "api" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "web" }
+    }
+  ],
+  "daemons": {
+    "email-worker": {
+      "root": "backend/",
+      "entrypoint": "Dockerfile",
+      "instances": {
+        "iad1": 1
+      }
+    }
+  }
+}
