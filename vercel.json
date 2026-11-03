@@ -17,6 +17,10 @@
       "destination": { "service": "api" }
     },
     {
+      "source": "/admin/queues",
+      "destination": { "service": "api" }
+    },
+    {
       "source": "/admin/queues/(.*)",
       "destination": { "service": "api" }
     },
