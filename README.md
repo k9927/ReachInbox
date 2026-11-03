@@ -126,6 +126,7 @@ cp .env.example .env
 | Variable | Description | Example |
 |---|---|---|
 | `PORT` | API server port | `5000` |
+| `NODE_ENV` | Runtime environment | `development` locally; `production` on deployment |
 | `FRONTEND_URL` | Frontend origin for CORS and OAuth redirects | `http://localhost:5173` |
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql://reachinbox:reachinbox_secret@localhost:5432/reachinbox?schema=public` |
 | `REDIS_HOST` | Redis host | `localhost` |
@@ -143,10 +144,12 @@ cp .env.example .env
 | `ETHEREAL_USER` | Ethereal SMTP username | Free test account from [ethereal.email](https://ethereal.email) |
 | `ETHEREAL_PASS` | Ethereal SMTP password | From [ethereal.email](https://ethereal.email) |
 | `ELASTICSEARCH_NODE` | Elasticsearch endpoint | `http://localhost:9200` |
+| `ELASTICSEARCH_API_KEY` | API key for a hosted Elasticsearch deployment | Keep this secret; leave blank for local Elasticsearch without auth |
+| `SMTP_ALLOWED_HOSTS` | Comma-separated allow-list for user-provided SMTP sender hosts | `smtp.ethereal.email` |
 | `EMAIL_CONCURRENCY` | Worker concurrency level | `5` |
 | `MIN_EMAIL_DELAY_MS` | Minimum throttle delay between sends (ms) | `2000` |
 | `MAX_EMAILS_PER_HOUR` | Server cap on emails per hour per sender | `100` |
-| `QUEUE_ADMIN_EMAILS` | Comma-separated admin emails for Bull-Board | `admin@company.com` (leave blank to allow all authenticated users in dev) |
+| `QUEUE_ADMIN_EMAILS` | Comma-separated admin emails allowed to open Bull-Board | `admin@company.com` (set this for production; may be blank in local development) |
 
 #### Setting up Ethereal Email Credentials
 1. Go to [https://ethereal.email/create](https://ethereal.email/create).
@@ -199,11 +202,11 @@ Dashboard opens at `http://localhost:5173`.
 
 ## ☁️ Deploy on Vercel (Hobby-friendly)
 
-The repository-root `vercel.json` defines a Vite frontend, an Express API, and a BullMQ worker daemon. Set the Vercel project root to the repository root (`react-app`) and choose the **Services** framework. Vercel builds the daemon image remotely from `backend/Dockerfile`; Docker Desktop is not required locally.
+The repository-root `vercel.json` defines a Vite frontend, an HTTP API container built from `backend/Dockerfile.api`, and a BullMQ worker daemon built from `backend/Dockerfile`. Set the Vercel project root to the repository root and choose the **Services** framework. Vercel builds both images remotely; Docker Desktop is not required locally.
 
-Vercel Daemons are in public beta and available on Hobby, subject to its quotas. Hobby currently allows 420 GB-hours of provisioned daemon memory per month. The smallest daemon is 1 GiB, so one continuously running worker uses that quota in about 17.5 days. Vercel stops the daemon when the quota is reached until the next month or an upgrade. Daemons run only in production, not preview deployments.
+Vercel Daemons are in public beta and use the plan's compute allowance. The Hobby plan currently includes 360 GB-hours of provisioned memory per month, so an always-on worker can consume a substantial share of the free allowance. Check Vercel's current usage and daemon limits before relying on it for continuous operation. Daemons run only in production, not preview deployments. See [Vercel Daemons](https://vercel.com/docs/daemons) and [Hobby plan usage](https://vercel.com/docs/plans/hobby).
 
-Add the backend variables from `backend/.env` to the Vercel production environment and keep their values private. Set `FRONTEND_URL` to the production Vercel URL without a trailing slash, and set `NODE_ENV=production`. Use these callback URLs in both Vercel and the respective provider consoles:
+Add the required backend variables from `backend/.env` to the Vercel production environment and keep their values private. Set `FRONTEND_URL` to the production Vercel URL without a trailing slash, set `NODE_ENV=production`, and set `QUEUE_ADMIN_EMAILS` to the admin's sign-in email. Do not copy a local `PORT=5000` value into Vercel; the API container listens on port 80 by default. Use these callback URLs in both Vercel and the respective provider consoles:
 
 ```text
 https://<your-vercel-domain>/api/auth/google/callback
@@ -229,35 +232,37 @@ npm test
 
 Here is a recommended walkthrough for your assignment submission video:
 
-1. **Google Login (0:00 - 0:45)**:
-   - Navigate to `http://localhost:5173`.
+1. **Google Login (0:00 - 0:30)**:
+   - Navigate to the deployed application URL (or `http://localhost:5173` for a local demo).
    - Click "Continue with Google".
    - Show dashboard with your user name, email, and Google avatar in top header and sidebar.
-2. **Sender & Slack Configuration (0:45 - 1:30)**:
-   - Click "Manage Senders" / "Integrations".
-   - Add a sender identity (e.g., `outreach@mycompany.com`).
-   - Click "Connect Slack" ➔ complete OAuth authorize flow.
-   - Select notification channel (e.g. `#email-alerts`) and click Save.
-3. **Scheduling Campaign (1:30 - 2:30)**:
+2. **Scheduling Campaign (0:30 - 1:30)**:
    - Click "Compose New Email".
-   - Import a `.csv` or `.txt` lead file (show detected valid lead count).
+   - Import a small `.csv` or `.txt` test lead file (show detected valid lead count).
    - Enter Subject and Body.
-   - Set Start time (e.g., in 1 minute), Delay between sends (e.g., 2s), and Hourly limit (e.g., 5/hr).
+   - Set Start time (e.g., in 1 minute), Delay between sends (e.g., 2s), and Hourly limit.
    - Click "Schedule emails".
    - Switch to **Scheduled** tab: show emails waiting with recipient, sender, scheduled time, and "Scheduled" badge.
-4. **BullMQ Live Dashboard (2:30 - 3:15)**:
-   - Click "BullMQ Monitor" in the sidebar/header to open `/admin/queues`.
-   - Show the delayed jobs lined up in BullMQ with their delay timers ticking down.
-5. **Server Restart & Persistence Scenario (3:15 - 4:00)**:
-   - In terminal, stop the worker and server (`Ctrl+C`).
-   - Show that jobs remain persisted in Redis / Postgres.
-   - Start the server and worker again (`npm run dev` & `npm run worker`).
-   - Show that future emails resume without duplication and send on time.
-6. **Delivery & Rate Limit Trigger (4:00 - 4:50)**:
-   - Show emails transitioning from "Scheduled" to "Sent" with timestamps.
-   - Click an Ethereal preview URL from the worker log to show the rendered test email.
-   - When the hourly cap is reached, show worker rescheduling the remaining jobs into the next hour window.
-   - Switch to Slack and show the live rate-limit alert message posted to your channel!
+3. **Queue and Delivery (1:30 - 2:15)**:
+   - Click "Queue Monitor" to open `/admin/queues` and show a delayed job.
+   - Show the email move from **Scheduled** to **Sent** and open its Ethereal preview URL.
+4. **Restart & Persistence (2:15 - 3:15)**:
+   - Use the local API and worker for this part so the process can be stopped and restarted from a terminal.
+   - Schedule a future test email, stop the worker (`Ctrl+C`), and show that the job remains scheduled.
+   - Restart it with `npm run worker` before the due time and show the email is processed once.
+5. **Slack Rate-Limit Alert (3:15 - 4:15)**:
+   - Before recording, connect Slack and select a notification channel.
+   - Schedule two Ethereal test recipients with an hourly campaign limit of `1` and a short interval.
+   - Show the first email send, the second job move to **Delayed**, and the live Slack rate-limit notification.
+6. **Search (4:15 - 4:45)**:
+   - Search for a known test recipient or subject and show the matching email.
+
+Use Ethereal-backed sender credentials and test recipient addresses. Ethereal provides a preview instead of delivering to real inboxes. Keep the merged video under five minutes.
+
+### Submission Checklist (outside the demo video)
+- Set the GitHub repository visibility to **Private** and grant repository access to the reviewer account(s) named in the assignment.
+- Upload the demo video (maximum 5 minutes) and submit the repository and video links through the assignment form.
+- Include any assumptions, shortcuts, or trade-offs in this README's section below.
 
 ---
 
