@@ -49,3 +49,4 @@ export function TopHeader({ user, onSignOut, onToggleMobileMenu }: TopHeaderProp
     </header>
   );
 }
+

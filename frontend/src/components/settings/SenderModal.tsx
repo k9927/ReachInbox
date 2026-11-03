@@ -187,3 +187,4 @@ export function SenderModal({ onClose, onSuccess }: SenderModalProps) {
     </div>
   );
 }
+

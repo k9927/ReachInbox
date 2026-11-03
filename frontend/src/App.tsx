@@ -15,6 +15,7 @@ import { Pagination } from "./components/dashboard/Pagination";
 import { ComposeModal } from "./components/campaign/ComposeModal";
 import { SenderModal } from "./components/settings/SenderModal";
 import { IntegrationsPanel } from "./components/settings/IntegrationsPanel";
+import { EmailDetailModal } from "./components/dashboard/EmailDetailModal";
 import { Toast } from "./components/common/Toast";
 import { LoginView } from "./components/auth/LoginView";
 
@@ -35,6 +36,7 @@ function App() {
   const [slack, setSlack] = useState<SlackStatus | null>(null);
 
   const [modal, setModal] = useState<"campaign" | "sender" | null>(null);
+  const [selectedEmail, setSelectedEmail] = useState<EmailItem | null>(null);
   const [showIntegrations, setShowIntegrations] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -218,6 +220,7 @@ function App() {
               loading={loading}
               searchQuery={query}
               onOpenCampaignModal={() => setModal("campaign")}
+              onSelectEmail={(em) => setSelectedEmail(em)}
             />
 
             <Pagination
@@ -280,6 +283,13 @@ function App() {
       )}
 
       {notice && <Toast message={notice} onClose={() => setNotice("")} />}
+
+      {selectedEmail && (
+        <EmailDetailModal
+          email={selectedEmail}
+          onClose={() => setSelectedEmail(null)}
+        />
+      )}
     </div>
   );
 }

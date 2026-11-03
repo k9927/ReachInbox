@@ -34,3 +34,4 @@ export function getSlackConnectUrl(): string {
 export function getBullBoardUrl(): string {
   return `${API_BASE}/admin/queues`;
 }
+

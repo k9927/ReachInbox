@@ -22,3 +22,4 @@ export async function request<T>(path: string, init: RequestInit = {}): Promise<
 
   return data as T;
 }
+

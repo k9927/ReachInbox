@@ -15,3 +15,4 @@ export async function logoutUser(): Promise<void> {
 export function getGoogleLoginUrl(): string {
   return `${API_BASE}/api/auth/google`;
 }
+

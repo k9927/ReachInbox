@@ -22,6 +22,7 @@ export interface EmailItem {
     name: string | null;
   };
   subject: string;
+  body?: string;
   scheduledAt: string;
   sentAt: string | null;
   status: EmailStatusType;
@@ -80,3 +81,4 @@ export interface ParseRecipientsResult {
     reason: string;
   }>;
 }
+

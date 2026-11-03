@@ -18,3 +18,15 @@
 .header-queue-button{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:#5855c8;border-color:#deddf6}
 .header-queue-button:hover{background:#f5f4ff;border-color:#c8c6f1}
 .button-icon{display:inline-flex;align-items:center;justify-content:center}
+
+.clickable-row{cursor:pointer;transition:background-color .15s}
+.clickable-row:hover{background-color:#f8f8fc}
+.email-detail-modal{width:min(540px,100%)}
+.email-detail-body{padding:18px 23px 20px;display:flex;flex-direction:column;gap:15px}
+.detail-meta-grid{display:flex;flex-direction:column;gap:10px;padding-bottom:14px;border-bottom:1px solid #f1f1f6}
+.detail-row{display:flex;align-items:center;justify-content:space-between;font-size:11px}
+.detail-label{font-size:10px;font-weight:700;color:#85859d;text-transform:uppercase;letter-spacing:.6px}
+.detail-time{display:flex;align-items:center;gap:5px;color:#5a5a73;font-size:11px;font-weight:550}
+.detail-content-box{display:flex;flex-direction:column;gap:7px}
+.detail-message-body{background:#f8f8fc;border:1px solid #ededf4;border-radius:8px;padding:12px 14px;font-size:11px;line-height:1.6;color:#38384f;white-space:pre-wrap;max-height:220px;overflow-y:auto}
+.detail-empty-body{color:#9898aa;font-style:italic}

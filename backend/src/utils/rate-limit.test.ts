@@ -35,3 +35,4 @@ test("enforces safe minimum throttle delay floor", () => {
     assert.equal(Math.max(requestedDelay1, MIN_SAFE_DELAY), 2000);
     assert.equal(Math.max(requestedDelay2, MIN_SAFE_DELAY), 5000);
 });
+

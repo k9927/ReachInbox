@@ -8,6 +8,7 @@ export interface EmailTableProps {
   loading: boolean;
   searchQuery: string;
   onOpenCampaignModal: () => void;
+  onSelectEmail?: (email: EmailItem) => void;
 }
 
 export function EmailTable({
@@ -16,6 +17,7 @@ export function EmailTable({
   loading,
   searchQuery,
   onOpenCampaignModal,
+  onSelectEmail,
 }: EmailTableProps) {
   function formatDate(isoString: string) {
     const d = new Date(isoString);
@@ -62,7 +64,12 @@ export function EmailTable({
               const recipientInitial = email.recipient[0]?.toUpperCase() || "R";
 
               return (
-                <tr key={email.id}>
+                <tr
+                  key={email.id}
+                  className="clickable-row"
+                  onClick={() => onSelectEmail?.(email)}
+                  title="Click to view full message content"
+                >
                   <td>
                     <div className="recipient-cell">
                       <span className="recipient-avatar">{recipientInitial}</span>
