@@ -83,7 +83,7 @@ export async function listEmails(req: AuthenticatedRequest, res: Response) {
             prisma.email.findMany({
                 where,
                 select: {
-                    id: true, recipient: true, subject: true, scheduledAt: true, sentAt: true,
+                        id: true, recipient: true, subject: true, body: true, scheduledAt: true, sentAt: true,
                     status: true, error: true,
                     sender: { select: { email: true, name: true } },
                     campaign: { select: { id: true, startAt: true, hourlyLimit: true } }
